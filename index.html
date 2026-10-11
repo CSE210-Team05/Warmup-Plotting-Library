@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="MiniPlots native SVG scatter and line chart demo" />
+    <title>MiniPlots — small charts, clean API</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <nav>
+        <a class="brand" href="#top" aria-label="MiniPlots home">MiniPlots</a>
+        <a class="github-link" href="https://github.com/CSE210-team05/Warmup-Plotting-Library">View on GitHub <span aria-hidden="true">↗</span></a>
+      </nav>
+      <div class="hero-copy" id="top">
+        <p class="eyebrow">Tiny native SVG charts</p>
+        <h1>Plot the signal.<br /><span>Skip the machinery.</span></h1>
+        <p class="lede">Two focused functions turn CSV or JavaScript data into accessible scatter and line plots—without a runtime dependency.</p>
+        <div class="install"><code>import { plotScatter, plotLine } from "./mini-plots.js";</code></div>
+      </div>
+    </header>
+
+    <main>
+      <section class="charts" aria-labelledby="examples-title">
+        <div class="section-heading">
+          <p class="eyebrow">Same data, two views</p>
+          <h2 id="examples-title">A deliberately small plotting surface</h2>
+        </div>
+        <article class="chart-card">
+          <div class="card-heading"><span>01</span><div><h3>Scatter</h3><p>Every observation, clearly separated.</p></div></div>
+          <div id="scatter-chart" class="chart" aria-live="polite"></div>
+        </article>
+        <article class="chart-card">
+          <div class="card-heading"><span>02</span><div><h3>Line</h3><p>Each series ordered by its x-coordinate.</p></div></div>
+          <div id="line-chart" class="chart" aria-live="polite"></div>
+        </article>
+      </section>
+
+      <section class="usage" aria-labelledby="usage-title">
+        <div>
+          <p class="eyebrow">CSV in, SVG out</p>
+          <h2 id="usage-title">One schema.<br />No adapters.</h2>
+          <p>The same <code>title,x,y</code> file works for either plot. Quoted labels, negative coordinates, duplicate x-values, and multiline fields are supported.</p>
+        </div>
+        <pre><code>title,x,y
+Experiment A,1,3
+Experiment A,2,5
+Experiment B,1,2
+Experiment B,2,6</code></pre>
+        <pre><code>import { plotLine } from
+  "https://cse210-team05.github.io/Warmup-Plotting-Library/mini-plots.js";
+
+await plotLine("#chart", { url: "./data.csv" }, {
+  title: "Experiment results",
+  xLabel: "Trial",
+  yLabel: "Reading"
+});</code></pre>
+      </section>
+    </main>
+
+    <footer><span>MiniPlots</span><span>Plain JavaScript · Native SVG · MIT</span></footer>
+    <script type="module" src="./demo.js"></script>
+  </body>
+</html>
