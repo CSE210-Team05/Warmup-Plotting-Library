@@ -181,7 +181,3 @@ Verify the public module URL returns JavaScript rather than an HTML error page b
 6. Visit both public URLs above and test the hosted module from a separate HTTP-served page.
 7. Recommended: protect `main`, require the successful verification check, and prevent force pushes.
 8. Optional after verification: create a `v0.1.0` tag. Do not configure npm publishing yet.
-
-## License
-
-[MIT](./LICENSE)
