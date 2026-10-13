@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MiniPlots Import Test</title>
+    <style>
+      body { max-width: 900px; margin: 2rem auto; padding: 0 1rem; font: 16px sans-serif; }
+      .plots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+      .plot { min-width: 0; }
+      svg { max-width: 100%; height: auto; }
+      #status { padding: 0.75rem; background: #eee; }
+      #status.error { color: #9b1c1c; }
+    </style>
+  </head>
+  <body>
+    <h1>MiniPlots Import Test</h1>
+    <p id="status">Loading module and rendering charts...</p>
+    <main class="plots">
+      <section class="plot">
+        <h2>CO2 scatter (2000-2020)</h2>
+        <div id="scatter"></div>
+      </section>
+      <section class="plot">
+        <h2>Annual CO2 line (1959-2025)</h2>
+        <div id="line"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      const status = document.querySelector("#status");
+      const moduleUrl = "https://cse210-team05.github.io/Warmup-Plotting-Library/mini-plots.js";
+      const dataUrl = "/public";
+
+      async function loadAnnualCsv() {
+        const response = await fetch(`${dataUrl}/co2_annmean_mlo.csv`);
+        if (!response.ok) {
+          throw new Error(`Could not load NOAA CSV: HTTP ${response.status}`);
+        }
+
+        const rows = (await response.text())
+          .split(/\r?\n/)
+          .filter((row) => row.trim() && !row.trimStart().startsWith("#"));
+        const headers = rows.shift().split(",").map((header) => header.trim());
+        const yearIndex = headers.indexOf("year");
+        const meanIndex = headers.indexOf("mean");
+        if (yearIndex < 0 || meanIndex < 0) {
+          throw new Error("NOAA CSV must contain year and mean columns");
+        }
+
+        return [
+          "title,x,y",
+          ...rows.map((row) => {
+            const fields = row.split(",");
+            return `Mauna Loa,${fields[yearIndex]},${fields[meanIndex]}`;
+          })
+        ].join("\n");
+      }
+
+      try {
+        const { plotScatter, plotLine } = await import(moduleUrl);
+        const annualCsv = await loadAnnualCsv();
+        await Promise.all([
+          plotScatter("#scatter", { url: `${dataUrl}/co2.csv` }, {
+            title: "Mauna Loa CO2 measurements",
+            xLabel: "Year",
+            yLabel: "CO2 (ppm)"
+          }),
+          plotLine("#line", { csv: annualCsv }, {
+            title: "Mauna Loa annual mean CO2",
+            xLabel: "Year",
+            yLabel: "CO2 (ppm)"
+          })
+        ]);
+        status.textContent = "Success: loaded both CSVs and rendered scatter and line plots.";
+      } catch (error) {
+        status.classList.add("error");
+        status.textContent = `Failed: ${error.message}`;
+        console.error(error);
+      }
+    </script>
+  </body>
+</html>
